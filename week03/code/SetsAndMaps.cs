@@ -65,6 +65,10 @@ public static class SetsAndMaps
         {
             var fields = line.Split(",");
             // TODO Problem 2 - ADD YOUR CODE HERE
+            // From the 4th column get Get the degree 
+            // If the degree is in the dictionary, increment the count
+            // If the degree is not in the dictionary, add it with a count of 1
+            degrees[fields[3]] = degrees.ContainsKey(fields[3]) ? degrees[fields[3]] + 1 : 1;
         }
 
         return degrees;
