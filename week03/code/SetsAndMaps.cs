@@ -93,8 +93,51 @@ public static class SetsAndMaps
     public static bool IsAnagram(string word1, string word2)
     {
         // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+        // Convert characters to lower case
+        // Check if the two words are the same length
+        // return false if count are not the same
+        // Create a dictionary to store the count of each letter in word1
+        // Loop through each letter in word1
+        // If the key is not in the dictionary for word2, return false
+
+        word1 = word1.Replace(" ", "").ToLower();
+        word2 = word2.Replace(" ", "").ToLower();
+
+        if (word1.Length != word2.Length)
+        {
+            return false;
+        }
+
+        var charCount = new Dictionary<char, int>();
+        foreach (char ch in word1)
+        {
+            if (charCount.ContainsKey(ch))
+            {
+                charCount[ch]++;
+            }
+            else
+            {
+                charCount[ch] = 1;
+            }
+        }
+        foreach (char ch in word2)
+        {
+            if (charCount.ContainsKey(ch))
+            {
+                charCount[ch]--;
+                if (charCount[ch] == 0)
+                {
+                    charCount.Remove(ch);
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return charCount.Count == 0;
     }
+
 
     /// <summary>
     /// This function will read JSON (Javascript Object Notation) data from the 
