@@ -156,20 +156,48 @@ public static class SetsAndMaps
     public static string[] EarthquakeDailySummary()
     {
         const string uri = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
-        using var client = new HttpClient();
-        using var getRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
-        using var jsonStream = client.Send(getRequestMessage).Content.ReadAsStream();
-        using var reader = new StreamReader(jsonStream);
-        var json = reader.ReadToEnd();
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        try
+        {
+            using var client = new HttpClient();
+            var json = client.GetStringAsync(uri).Result;
+            
 
-        var featureCollection = JsonSerializer.Deserialize<FeatureCollection>(json, options);
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-        // TODO Problem 5:
-        // 1. Add code in FeatureCollection.cs to describe the JSON using classes and properties 
-        // on those classes so that the call to Deserialize above works properly.
-        // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
-        // 3. Return an array of these string descriptions.
-        return [];
+            var featureCollection = JsonSerializer.Deserialize<FeatureCollection>(json, options);
+            // TODO Problem 5:
+            // 1. Add code in FeatureCollection.cs to describe the JSON using classes and properties 
+            // on those classes so that the call to Deserialize above works properly.
+            // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
+            // 3. Return an array of these string descriptions.
+
+            if (featureCollection?.Features == null) return Array.Empty<string>();
+
+            return featureCollection.Features
+                .Select(feature => $"{feature.Properties.Place} - Mag {feature.Properties.Mag:F2}")
+                .ToArray();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching earthquake data: {ex.Message}");
+            return Array.Empty<string>();
+        }
+    }
+
+    // Classes for deserialization
+    public class FeatureCollection
+    {
+        public List<Feature> Features { get; set; }
+    }
+
+    public class Feature
+    {
+        public Properties Properties { get; set; }
+    }
+
+    public class Properties
+    {
+        public string Place { get; set; }
+        public double? Mag { get; set; }
     }
 }
